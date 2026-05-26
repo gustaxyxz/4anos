@@ -86,33 +86,44 @@ export default function Splash({ onComplete }) {
               </motion.p>
             </motion.div>
           ) : (
-            // Years display state
+            // Years display state - clean and minimal
             <motion.div
-              className="text-center"
-              initial={{ scale: 0.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ duration: 0.6 }}
+              className="text-center flex flex-col items-center justify-center h-screen"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.3 }}
             >
+              {/* Large year number */}
               <motion.h1
-                className="font-serif text-9xl sm:text-[10rem] lg:text-[12rem] font-black gradient-text"
+                className="font-black text-8xl sm:text-9xl lg:text-[14rem] leading-none gradient-text"
                 key={yearIndex}
-                initial={{ scale: 0.6, opacity: 0, y: 50 }}
-                animate={{ scale: 1, opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, ease: 'easeOut' }}
+                initial={{ scale: 0.3, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                exit={{ scale: 1.5, opacity: 0 }}
+                transition={{ duration: 0.6, ease: 'easeOut' }}
               >
                 {years[yearIndex]}
               </motion.h1>
 
+              {/* Progress indicator */}
               <motion.div
-                className="mt-8 h-1 w-20 bg-gradient-to-r from-primary to-accent mx-auto rounded-full"
-                animate={{
-                  scaleX: [0, 1, 1, 0],
-                }}
-                transition={{
-                  duration: 1.2,
-                  ease: 'easeInOut',
-                }}
-              />
+                className="mt-12 flex gap-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+              >
+                {years.map((_, idx) => (
+                  <motion.div
+                    key={idx}
+                    className="h-2 rounded-full"
+                    animate={{
+                      width: idx === yearIndex ? 32 : 8,
+                      backgroundColor: idx === yearIndex ? '#c084fc' : '#8b5cf6',
+                    }}
+                    transition={{ duration: 0.3 }}
+                  />
+                ))}
+              </motion.div>
             </motion.div>
           )}
 
