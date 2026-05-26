@@ -1,24 +1,27 @@
+import { memo } from 'react';
 import { useCounter } from '../hooks/useCounter';
 import { motion } from 'framer-motion';
 
-export default function Counter() {
-  const { years, months, days, hours, minutes, seconds } = useCounter();
+const CounterUnit = memo(({ value, label, delay = 0 }) => (
+  <motion.div
+    className="flex flex-col items-center gap-0.5"
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ delay, duration: 0.5 }}
+  >
+    <div className="gpu-accelerated font-serif text-3xl sm:text-4xl font-black text-white drop-shadow-[0_0_25px_rgba(192,132,252,0.5)]">
+      {String(value).padStart(2, '0')}
+    </div>
+    <div className="text-xs font-medium text-primary/80 uppercase tracking-wider text-center">
+      {label}
+    </div>
+  </motion.div>
+));
 
-  const CounterUnit = ({ value, label, delay = 0 }) => (
-    <motion.div
-      className="flex flex-col items-center gap-0.5"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay, duration: 0.5 }}
-    >
-      <div className="gpu-accelerated font-serif text-3xl sm:text-4xl font-black text-white drop-shadow-[0_0_25px_rgba(192,132,252,0.5)]">
-        {String(value).padStart(2, '0')}
-      </div>
-      <div className="text-xs font-medium text-primary/80 uppercase tracking-wider text-center">
-        {label}
-      </div>
-    </motion.div>
-  );
+CounterUnit.displayName = 'CounterUnit';
+
+export default memo(function Counter() {
+  const { years, months, days, hours, minutes, seconds } = useCounter();
 
   return (
     <motion.div
@@ -42,4 +45,4 @@ export default function Counter() {
       </div>
     </motion.div>
   );
-}
+});
