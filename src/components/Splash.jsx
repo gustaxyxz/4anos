@@ -1,10 +1,11 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Splash({ onComplete }) {
   const [showSplash, setShowSplash] = useState(true);
   const [showYears, setShowYears] = useState(false);
   const [yearIndex, setYearIndex] = useState(0);
+  const audioRef = useRef(null);
 
   const years = ['2022', '2023', '2024', '2025', '2026'];
 
@@ -18,7 +19,7 @@ export default function Splash({ onComplete }) {
           setTimeout(() => {
             setShowSplash(false);
             setTimeout(() => {
-              const audio = document.querySelector('audio');
+              const audio = audioRef.current || document.querySelector('audio');
               if (audio) {
                 audio.volume = 0.3;
                 audio.play().catch(err => console.log('Autoplay prevented:', err));

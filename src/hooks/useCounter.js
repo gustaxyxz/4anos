@@ -1,6 +1,8 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 
-export const useCounter = (startDate = new Date('2022-05-26T00:00:00Z')) => {
+export const useCounter = (startDate = '2022-05-26T00:00:00Z') => {
+  const memoizedStartDate = useMemo(() => new Date(startDate), [startDate]);
+  
   const [time, setTime] = useState({
     years: 0,
     months: 0,
@@ -13,7 +15,7 @@ export const useCounter = (startDate = new Date('2022-05-26T00:00:00Z')) => {
   useEffect(() => {
     const calculateTime = () => {
       const now = new Date();
-      const start = new Date(startDate);
+      const start = new Date(memoizedStartDate);
       
       let years = now.getFullYear() - start.getFullYear();
       let months = now.getMonth() - start.getMonth();
@@ -54,7 +56,7 @@ export const useCounter = (startDate = new Date('2022-05-26T00:00:00Z')) => {
     // Update every second
     const interval = setInterval(calculateTime, 1000);
     return () => clearInterval(interval);
-  }, [startDate]);
+  }, [memoizedStartDate]);
 
   return time;
 };
