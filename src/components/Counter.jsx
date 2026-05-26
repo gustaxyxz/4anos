@@ -37,7 +37,7 @@ export default function Counter() {
         <CounterUnit value={hours} label="Horas" delay={0.15} />
         <div className="text-primary/40 text-lg hidden xs:block">•</div>
         <CounterUnit value={minutes} label="Min" delay={0.2} />
-        <div className="text-primary/40 text-lg hidden xs:block\">•</div>
+        <div className="text-primary/40 text-lg hidden xs:block">•</div>
         <CounterUnit value={seconds} label="Seg" delay={0.25} />
       </div>
     </motion.div>
