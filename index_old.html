@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>4 Anos Juntos - A Galeria Imersiva</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Playfair Display (Serif) & Inter (Sans) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&display=swap" rel="stylesheet">
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+          },
+          colors: { 
+            background: '#050505',
+            surface: '#09090b',
+            primary: '#c084fc',
+            secondary: '#8b5cf6',
+            accent: '#e9d5ff',
+            light: '#f3e8ff'
+          }
+          animation: { 'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite' }
+        }
+      }
+    }
+  </script>
+  <!-- React, ReactDOM, Babel, Framer Motion -->
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://unpkg.com/framer-motion@10.12.16/dist/framer-motion.js"></script>
+  <!-- Lenis Smooth Scroll -->
+  <script src="https://unpkg.com/@studio-freight/lenis@1.0.39/dist/lenis.min.js"></script>
+  <style>
+    body { background: #050505; color: #fff; overflow-x: hidden; cursor: none; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: #050505; }
+    ::-webkit-scrollbar-thumb { background: #c084fc; border-radius: 4px; }
+    
+    /* Textura Noise/Mármore Dark e Glassmorphism Refinado */
+    .noise-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; pointer-events: none; z-index: 9999; opacity: 0.04; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E"); }
+    .glass-card { background: rgba(20, 16, 38, 0.25); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.05); border-top-color: rgba(192, 132, 252, 0.3); border-left-color: rgba(192, 132, 252, 0.2); box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3); }
+    .text-glow { text-shadow: 0 0 20px rgba(192, 132, 252, 0.5); }
+
+    /* Custom Cursor */
+    .cursor-dot { width: 8px; height: 8px; background: #c084fc; border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9999; transform: translate(-50%, -50%); transition: background-color 0.3s; box-shadow: 0 0 10px #c084fc; }
+    .cursor-outline { width: 40px; height: 40px; border: 1px solid rgba(192, 132, 252, 0.5); border-radius: 50%; position: fixed; top: 0; left: 0; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); transition: width 0.2s, height 0.2s; }
+    a:hover ~ .cursor-dot, button:hover ~ .cursor-dot { background: #fff; box-shadow: 0 0 15px #fff; }
+  </style>
+</head>
+<body class="antialiased selection:bg-primary selection:text-white">
+  <div class="noise-overlay"></div>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { useState, useEffect, useRef } = React;
+    const { motion, useScroll, useTransform } = window.Motion;
+
+    const startDate = new Date('2022-05-26T00:00:00');
+
+    function calculateElapsed() {
+      const to = new Date();
+      let years = to.getFullYear() - startDate.getFullYear();
+      let months = to.getMonth() - startDate.getMonth();
+      let days = to.getDate() - startDate.getDate();
+      let hours = to.getHours() - startDate.getHours();
+      let minutes = to.getMinutes() - startDate.getMinutes();
+      let seconds = to.getSeconds() - startDate.getSeconds();
+
+      if (seconds < 0) { seconds += 60; minutes -= 1; }
+      if (minutes < 0) { minutes += 60; hours -= 1; }
+      if (hours < 0) { hours += 24; days -= 1; }
+      if (days < 0) { const prevMonth = new Date(to.getFullYear(), to.getMonth(), 0).getDate(); days += prevMonth; months -= 1; }
+      if (months < 0) { months += 12; years -= 1; }
+      return { years, months, days, hours, minutes, seconds };
+    }
+
+    // Componente de Parallax
+    const ParallaxItem = ({ children, offset = 0, delay = 0, className = "" }) => {
+      const ref = useRef(null);
+      const [elementTop, setElementTop] = useState(0);
+      const [y, setY] = useState(0);
+
+      useEffect(() => {
+        const element = ref.current;
+        if (!element) return;
+
+        const handleScroll = () => {
+          const rect = element.getBoundingClientRect();
+          const windowHeight = window.innerHeight;
+          const scrollProgress = 1 - (rect.top - windowHeight) / (windowHeight + rect.height);
+          setY(scrollProgress * offset);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+      }, [offset]);
+
+      return (
+        <motion.div 
+          ref={ref} 
+          initial={{ opacity: 0, y: 40 }} 
+          whileInView={{ opacity: 1, y: 0 }} 
+          viewport={{ once: true, margin: "-50px" }} 
+          transition={{ delay, duration: 0.8 }} 
+          style={{ y }} 
+          className={className}
+        >
+          {children}
+        </motion.div>
+      );
+    };
+
+    // Componente de Mídia
+    const MediaCard = ({ src, type = "image", alt }) => {
+      return (
+        <div className="overflow-hidden rounded-lg bg-[#09090b] aspect-square md:aspect-auto border border-white/5 relative group cursor-pointer">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#050505]/40 z-10 mix-blend-multiply pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+          {type === "image" ? (
+            <img src={src} alt={alt} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" loading="lazy" />
+          ) : (
+            <video src={src} autoPlay muted loop playsInline className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          )}
+        </div>
+      );
+    };
+
+    // Componente de Sincronização de Letra com Áudio
+    const LyricsSync = ({ audioRef, lyrics }) => {
+      const [currentLyricIndex, setCurrentLyricIndex] = useState(0);
+
+      useEffect(() => {
+        const audio = audioRef.current;
+        if (!audio) return;
+
+        const handleTimeUpdate = () => {
+          const currentTime = audio.currentTime;
+          const index = lyrics.findIndex((l, i) => {
+            const nextTime = lyrics[i + 1]?.time || Infinity;
+            return currentTime >= l.time && currentTime < nextTime;
+          });
+          setCurrentLyricIndex(Math.max(0, index));
+        };
+
+        audio.addEventListener('timeupdate', handleTimeUpdate);
+        return () => audio.removeEventListener('timeupdate', handleTimeUpdate);
+      }, [lyrics]);
+
+      return (
+        <motion.div className="h-[40vh] flex flex-col items-center justify-center text-center px-8 py-20">
+          <div className="space-y-4 min-h-[200px] flex flex-col justify-center">
+            {lyrics.map((lyric, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0.3, y: 20 }}
+                animate={i === currentLyricIndex ? { opacity: 1, y: 0 } : { opacity: 0.2, y: i < currentLyricIndex ? -20 : 20 }}
+                transition={{ duration: 0.5 }}
+                className={`text-2xl md:text-5xl font-serif leading-tight transition-colors duration-300 ${
+                  i === currentLyricIndex ? 'text-white drop-shadow-xl' : 'text-gray-500'
+                }`}
+              >
+                {lyric.text}
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+      );
+    };
+
+    const CustomCursor = () => {
+      useEffect(() => {
+        const dot = document.querySelector('.cursor-dot');
+        const outline = document.querySelector('.cursor-outline');
+        if (!dot || !outline) return;
+        const moveCursor = (e) => {
+          dot.style.left = `${e.clientX}px`;
+          dot.style.top = `${e.clientY}px`;
+          outline.animate({ left: `${e.clientX}px`, top: `${e.clientY}px` }, { duration: 500, fill: "forwards" });
+        };
+        window.addEventListener('mousemove', moveCursor);
+        return () => window.removeEventListener('mousemove', moveCursor);
+      }, []);
+      return (
+        <>
+          <div className="cursor-dot hidden md:block"></div>
+          <div className="cursor-outline hidden md:block"></div>
+        </>
+      );
+    };
+
+    const Loader = ({ onComplete }) => {
+      const [year, setYear] = useState(2022);
+      useEffect(() => {
+        let y = 2022;
+        const interval = setInterval(() => {
+          if (y < 2026) { y++; setYear(y); } 
+          else { clearInterval(interval); setTimeout(onComplete, 1200); }
+        }, 600);
+        return () => clearInterval(interval);
+      }, [onComplete]);
+
+      return (
+        <motion.div initial={{ opacity: 1 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-50 flex items-center justify-center bg-[#050505]">
+          <motion.div key={year} initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.4 }} className="text-5xl md:text-7xl font-light text-primary tracking-widest text-glow font-sans">
+            {year}
+          </motion.div>
+        </motion.div>
+      );
+    };
+
+    const App = () => {
+      const [time, setTime] = useState(calculateElapsed());
+      const [appState, setAppState] = useState('idle');
+      const [audioPlaying, setAudioPlaying] = useState(false);
+      const audioRef = useRef(null);
+
+      // Dados de letra sincronizados com a música (segundos e texto)
+      // Substitua com os tempos exatos da sua música
+      const lyricsData = [
+        { time: 0, text: "1.460 dias." },
+        { time: 3, text: "Milhares de sorrisos." },
+        { time: 6, text: "Inúmeros momentos que nos moldaram." },
+        { time: 10, text: "Quatro anos atrás," },
+        { time: 13, text: "o destino nos cruzou." },
+        { time: 17, text: "Mas hoje," },
+        { time: 19, text: "você é meu destino." },
+        { time: 22, text: "Todos os dias." },
+        { time: 26, text: "Obrigado por ser minha paz." },
+        { time: 30, text: "No meio do caos." },
+        { time: 33, text: "E a luz nos meus dias escuros." },
+        { time: 37, text: "Nosso 'para sempre'" },
+        { time: 40, text: "está só começando." },
+        { time: 44, text: "Eu te amo absurdamente." },
+        { time: 48, text: "Feliz 4 anos." }
+      ];
+
+      useEffect(() => {
+        // Inicializa o Smooth Scroll nível Awwwards (Lenis)
+        const lenis = new Lenis({ duration: 1.2, easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+        function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+        requestAnimationFrame(raf);
+        return () => lenis.destroy();
+      }, []);
+
+      useEffect(() => {
+        if (appState !== 'ready') return;
+        const timer = setInterval(() => setTime(calculateElapsed()), 1000);
+        
+        const audio = audioRef.current;
+        if (audio) {
+          const handlePlay = () => setAudioPlaying(true);
+          const handlePause = () => setAudioPlaying(false);
+          audio.addEventListener('play', handlePlay);
+          audio.addEventListener('pause', handlePause);
+          return () => {
+            clearInterval(timer);
+            audio.removeEventListener('play', handlePlay);
+            audio.removeEventListener('pause', handlePause);
+          };
+        }
+        return () => clearInterval(timer);
+      }, [appState]);
+
+      if (appState === 'idle') {
+        return (
+          <>
+          <CustomCursor />
+          <div className="h-screen w-full flex flex-col items-center justify-center relative overflow-hidden bg-[#050505]">
+            <div className="absolute w-[80vw] h-[80vw] max-w-[600px] max-h-[600px] bg-primary/20 rounded-full blur-[120px] mix-blend-screen animate-pulse-slow pointer-events-none" />
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.5, ease: "easeOut" }} className="z-10 flex flex-col items-center text-center px-4">
+              <span className="text-primary tracking-[0.3em] uppercase text-xs md:text-sm mb-4 opacity-80 font-medium font-sans">Um presente para você</span>
+              <h1 className="text-4xl md:text-5xl font-light text-white mb-12 tracking-wide drop-shadow-[0_0_15px_rgba(192,132,252,0.4)]">A Galeria <br/> <span className="font-serif italic text-primary">Imersiva</span></h1>
+              <motion.button whileHover={{ scale: 1.05, backgroundColor: "rgba(192,132,252,0.15)" }} whileTap={{ scale: 0.95 }} onClick={() => setAppState('loading')} className="relative group px-10 md:px-12 py-4 md:py-5 rounded-full overflow-hidden border border-primary/30 bg-[#09090b]/80 backdrop-blur-md transition-all duration-500 shadow-[0_0_30px_rgba(192,132,252,0.15)]">
+                <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                <span className="relative text-xs md:text-sm font-light tracking-[0.25em] text-white uppercase font-sans">Desbloquear Experiência</span>
+              </motion.button>
+            </motion.div>
+          </div>
+          </>
+        );
+      }
+
+      if (appState === 'loading') {
+        return <Loader onComplete={() => setAppState('ready')} />;
+      }
+
+      return (
+        <>
+        <CustomCursor />
+        <div className="relative min-h-screen pb-32 overflow-hidden">
+          {/* Formas orgânicas suaves no fundo (Blobs Minimalistas) */}
+          <div className="fixed top-[-10%] left-[-10%] w-[60vw] h-[60vw] max-w-[600px] bg-primary/20 rounded-full blur-[180px] pointer-events-none" />
+          <div className="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] max-w-[600px] bg-secondary/20 rounded-full blur-[180px] pointer-events-none" />
+          
+          <main className="max-w-6xl mx-auto px-6 relative z-10">
+            {/* Hero Section Editorial */}
+            <section className="min-h-[85vh] flex flex-col justify-center items-center py-20 text-center">
+              <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, ease: "easeOut" }}>
+                <span className="text-primary uppercase tracking-[0.4em] text-xs md:text-sm font-medium mb-6 block font-sans text-glow">A Celebração</span>
+                <h1 className="text-5xl md:text-7xl font-serif text-white mb-8 leading-tight drop-shadow-2xl">4 Anos de <br/><span className="italic text-primary">Nossa História</span></h1>
+              </motion.div>
+              
+              {/* Contador Dark Luxury */}
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 1.5 }} className="w-full flex flex-wrap items-center justify-center gap-2 text-gray-300 font-light text-sm md:text-base tracking-[0.05em] lowercase mt-4 font-sans glass-card px-8 py-4 rounded-full max-w-2xl mx-auto">
+                <span><span className="font-medium text-white">{time.years}</span> anos</span> <span className="text-primary/50 mx-1">•</span>
+                <span><span className="font-medium text-white">{time.months}</span> meses</span> <span className="text-primary/50 mx-1">•</span>
+                <span><span className="font-medium text-white">{time.days}</span> dias</span> <span className="text-primary/50 mx-1 hidden md:inline">•</span>
+                <span className="w-full md:w-auto text-center mt-2 md:mt-0"><span className="font-medium text-white">{String(time.hours).padStart(2,'0')}</span> horas <span className="text-primary/50 mx-1">•</span> <span className="font-medium text-white">{String(time.minutes).padStart(2,'0')}</span> min</span>
+              </motion.div>
+
+              {/* Indicador de Scroll */}
+              <motion.div 
+                initial={{ opacity: 0 }} 
+                animate={{ opacity: 1 }} 
+                transition={{ delay: 1.5, duration: 1 }}
+                className="mt-20 flex flex-col items-center gap-3 opacity-80"
+              >
+                <span className="text-[10px] uppercase tracking-widest text-primary font-medium font-sans text-glow">Deslize</span>
+                <motion.div animate={{ y: [0, 5, 0] }} transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }} className="w-[1px] h-12 bg-gradient-to-b from-primary to-transparent">
+                </motion.div>
+              </motion.div>
+            </section>
+
+            {/* Galeria Assimétrica com Parallax */}
+            <section className="py-32 w-full relative z-20">
+              <motion.h2 initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }} transition={{ duration: 1 }} className="text-4xl md:text-6xl font-serif text-white mb-20 text-center drop-shadow-lg">
+                Nossos <span className="italic text-primary">Momentos</span>
+              </motion.h2>
+              
+              {/* Grid Assimétrico */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8 max-w-6xl mx-auto px-4 auto-rows-max">
+                {/* Coluna Esquerda - Tall Item */}
+                <ParallaxItem delay={0} offset={-80} className="md:col-span-1 md:row-span-2">
+                  <MediaCard src="IMG_1420.JPEG" type="image" alt="Memória 1" />
+                </ParallaxItem>
+                
+                {/* Coluna Centro - Múltiplas imagens */}
+                <ParallaxItem delay={0.1} offset={40} className="md:col-span-1">
+                  <MediaCard src="IMG_0419.JPEG" type="image" alt="Memória 2" />
+                </ParallaxItem>
+                <ParallaxItem delay={0.2} offset={-120} className="md:col-span-1">
+                  <MediaCard src="IMG_1735.MOV" type="video" alt="Vídeo 1" />
+                </ParallaxItem>
+                
+                {/* Coluna Direita */}
+                <ParallaxItem delay={0.3} offset={90} className="md:col-span-1">
+                  <MediaCard src="IMG_8285.JPEG" type="image" alt="Memória 3" />
+                </ParallaxItem>
+                <ParallaxItem delay={0.4} offset={-60} className="md:col-span-1">
+                  <MediaCard src="IMG_1638.MOV" type="video" alt="Vídeo 2" />
+                </ParallaxItem>
+                <ParallaxItem delay={0.5} offset={100} className="md:col-span-1">
+                  <MediaCard src="IMG_1878.JPEG" type="image" alt="Memória 4" />
+                </ParallaxItem>
+              </div>
+            </section>
+
+            {/* Seção de Sincronização de Letra com Áudio */}
+            <section className="py-32 relative z-20 sticky top-0 min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-transparent via-[#050505]/80 to-[#050505] backdrop-blur-sm">
+              <audio ref={audioRef} src="musica.mp3" loop className="hidden" />
+              <LyricsSync audioRef={audioRef} lyrics={lyricsData} />
+              <button 
+                onClick={() => {
+                  if (audioRef.current.paused) {
+                    audioRef.current.play();
+                  } else {
+                    audioRef.current.pause();
+                  }
+                }}
+                className="mt-12 px-8 py-3 bg-primary/20 border border-primary/50 rounded-full text-white font-sans text-sm uppercase tracking-widest hover:bg-primary/30 transition-all duration-300"
+              >
+                {audioPlaying ? '⏸ Pausar' : '▶ Tocar'}
+              </button>
+            </section>
+
+            {/* Carta Final */}
+            <section className="py-24 px-6 max-w-3xl mx-auto text-center">
+               <motion.div initial={{ opacity: 0, y: 40 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 1 }}>
+                 <h3 className="text-3xl md:text-4xl font-serif mb-8 text-white text-glow">Para você,</h3>
+                 <div className="space-y-6 text-gray-300 leading-relaxed text-lg md:text-xl font-serif italic mb-16 px-4 drop-shadow-sm">
+                   <p>1.460 dias. Milhares de sorrisos. Inúmeros momentos que moldaram quem somos.</p>
+                   <p>Quatro anos atrás, o destino nos cruzou, mas hoje é você quem eu escolho como meu destino todos os dias.</p>
+                   <p>Obrigado por ser minha paz no meio do caos e a luz nos meus dias mais escuros. Nosso 'para sempre' está só começando.</p>
+                   <p className="font-medium text-white pt-8 not-italic font-sans text-base">Eu te amo absurdamente. <br/><span className="font-serif italic text-primary mt-2 block font-normal">Feliz 4 anos.</span></p>
+                 </div>
+                 
+                 {/* Player do Spotify */}
+                 <div className="mt-16 glass-card p-3 mx-auto max-w-sm relative z-20">
+                   <iframe src="https://open.spotify.com/embed/track/0Enz8lbwvDmGg3UijbW7IS?utm_source=generator&theme=0" width="100%" height="152" frameBorder="0" allowFullScreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy" className="rounded-xl"></iframe>
+                 </div>
+               </motion.div>
+            </section>
+          </main>
+        </div>
+        </>
+      );
+    };
+
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+  </script>
+</body>
+</html>

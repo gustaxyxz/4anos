@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>4 Anos de Nosso Amor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;800;900&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background: #0a0a0a;
+      color: #fff;
+      font-family: "Inter", sans-serif;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: 
+        radial-gradient(circle 800px at -5% 10%, rgba(200, 100, 255, 0.25), transparent 30%),
+        radial-gradient(circle 800px at 105% -5%, rgba(168, 85, 247, 0.25), transparent 35%),
+        radial-gradient(circle 800px at -5% 105%, rgba(168, 85, 247, 0.2), transparent 35%),
+        radial-gradient(circle 800px at 110% 105%, rgba(200, 100, 255, 0.22), transparent 35%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(168, 85, 247, 0.5);
+      border-radius: 3px;
+    }
+
+    .splash {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      background: #0a0a0a;
+      z-index: 9999;
+      opacity: 1;
+      transition: opacity 1s ease-out;
+    }
+
+    .splash.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .start-btn {
+      padding: 1.2rem 3rem;
+      font-size: clamp(1rem, 2vw, 1.3rem);
+      font-weight: 700;
+      color: #fff;
+      background: linear-gradient(135deg, #c084fc, #8b5cf6);
+      border: 2px solid rgba(168, 85, 247, 0.5);
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.4s;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      box-shadow: 0 0 50px rgba(168, 85, 247, 0.25);
+      animation: pulseBtn 2s ease-in-out infinite;
+    }
+
+    .start-btn.pulse {
+      animation: pulseBtn 0.35s ease-in-out;
+    }
+
+    @keyframes pulseBtn {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); }
+    }
+
+    .lyrics-box.active {
+      border-color: rgba(255, 192, 253, 0.75);
+      box-shadow: 0 0 50px rgba(192, 132, 252, 0.18);
+      background: rgba(48, 18, 90, 0.75);
+    }
+
+    .start-btn:hover {
+      transform: scale(1.08);
+      box-shadow: 0 0 80px rgba(168, 85, 247, 0.5);
+      border-color: rgba(168, 85, 247, 1);
+    }
+
+    .start-btn:active {
+      transform: scale(0.95);
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 1s ease-out 0.5s;
+      pointer-events: none;
+    }
+
+    .container.visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .header-counter {
+      position: sticky;
+      top: 0;
+      background: rgba(10, 10, 10, 0.85);
+      backdrop-filter: blur(10px);
+      padding: 1.5rem 1rem;
+      z-index: 100;
+      border-bottom: 1px solid rgba(168, 85, 247, 0.1);
+    }
+
+    .counter-display {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      max-width: 1400px;
+      margin: 0 auto;
+      align-items: center;
+    }
+
+    .counter-unit {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.3rem;
+      min-width: fit-content;
+    }
+
+    .counter-value {
+      font-size: clamp(2rem, 6vw, 4.5rem);
+      font-weight: 900;
+      font-family: "Playfair Display", serif;
+      color: #ffffff;
+      text-shadow: 0 0 30px rgba(168, 85, 247, 0.6);
+      line-height: 1;
+    }
+
+    .counter-label {
+      font-size: clamp(0.65rem, 1vw, 0.85rem);
+      color: #a0a0c0;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      font-weight: 600;
+    }
+
+    .separator {
+      font-size: clamp(1.5rem, 4vw, 3rem);
+      color: #c084fc;
+      opacity: 0.5;
+      line-height: 1;
+      margin: 0 0.5rem;
+    }
+
+    .hero {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 3rem 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero h1 {
+      font-size: clamp(2.5rem, 10vw, 6rem);
+      font-family: "Playfair Display", serif;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #ffffff, #d8b4fe);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 0 0 60px rgba(168, 85, 247, 0.3);
+      animation: fadeInDown 1s ease-out;
+    }
+
+    .hero p {
+      font-size: clamp(1rem, 2.5vw, 1.4rem);
+      color: #d8b4fe;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      margin-bottom: 3rem;
+      opacity: 0.9;
+      animation: fadeInUp 1.2s ease-out;
+    }
+
+    .scroll-arrow {
+      width: 35px;
+      height: 35px;
+      border: 2px solid rgba(168, 85, 247, 0.6);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      cursor: pointer;
+      transition: all 0.3s;
+      animation: fadeInUp 1.4s ease-out;
+    }
+
+    .scroll-arrow:hover {
+      border-color: rgba(168, 85, 247, 1);
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.6);
+    }
+
+    .scroll-arrow::after {
+      content: "↓";
+      color: #c084fc;
+      font-size: 1.3rem;
+      animation: bounce-arrow 2s infinite;
+    }
+
+    @keyframes bounce-arrow {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(8px); }
+    }
+
+    @keyframes fadeInDown {
+      from {
+        opacity: 0;
+        transform: translateY(-40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .gallery-section {
+      padding: 5rem 1.5rem;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    @media (max-width: 768px) {
+      .gallery-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+      }
+
+      .separator {
+        display: none;
+      }
+
+      .counter-display {
+        gap: 0.5rem;
+      }
+    }
+
+    .photo-card {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      aspect-ratio: 3/4;
+      cursor: pointer;
+      transition: all 0.4s;
+      animation: fadeInUp 0.7s ease-out backwards;
+    }
+
+    .photo-card:hover {
+      border-color: rgba(168, 85, 247, 0.6);
+      box-shadow: 0 0 40px rgba(168, 85, 247, 0.25);
+      transform: translateY(-8px);
+    }
+
+    .photo-card img,
+    .photo-card video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+
+    .lyrics-box {
+      background: rgba(20, 10, 35, 0.4);
+      backdrop-filter: blur(15px);
+      border: 1.5px solid rgba(168, 85, 247, 0.3);
+      border-radius: 16px;
+      padding: 3rem 2.5rem;
+      min-height: 350px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      animation: fadeInUp 0.7s ease-out backwards;
+    }
+
+    .lyrics-text {
+      font-size: clamp(1.8rem, 5vw, 3rem);
+      font-family: "Playfair Display", serif;
+      font-weight: 700;
+      color: #d8b4fe;
+      line-height: 1.8;
+      text-shadow: 0 0 20px rgba(168, 85, 247, 0.3);
+    }
+
+    .ending-section {
+      padding: 6rem 2rem;
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .ending-section h2 {
+      font-size: clamp(2.5rem, 7vw, 4rem);
+      font-family: "Playfair Display", serif;
+      font-weight: 900;
+      margin-bottom: 2.5rem;
+      background: linear-gradient(135deg, #d8b4fe, #c084fc);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .ending-section p {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      line-height: 2;
+      color: #d0d0e0;
+      margin-bottom: 2rem;
+    }
+
+    .spotify-embed {
+      margin-top: 3rem;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(168, 85, 247, 0.2);
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    iframe {
+      width: 100%;
+      height: 152px;
+      border: none;
+    }
+
+    @media (max-width: 480px) {
+      .hero h1 {
+        margin-bottom: 2rem;
+      }
+
+      .ending-section {
+        padding: 4rem 1.5rem;
+      }
+
+      iframe {
+        height: 140px;
+      }
+    }
+
+    .noise {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 9998;
+      opacity: 0.01;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    }
+
+    .music-player {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: rgba(20, 10, 35, 0.95);
+      backdrop-filter: blur(15px);
+      border: 1.5px solid rgba(168, 85, 247, 0.4);
+      border-radius: 50px;
+      padding: 1rem 1.2rem;
+      z-index: 500;
+      display: flex;
+      gap: 0.8rem;
+      align-items: center;
+    }
+
+    .music-player button {
+      background: rgba(168, 85, 247, 0.3);
+      border: 1px solid rgba(168, 85, 247, 0.6);
+      color: #d8b4fe;
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.3rem;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .music-player button:hover {
+      background: rgba(168, 85, 247, 0.6);
+      box-shadow: 0 0 25px rgba(168, 85, 247, 0.4);
+    }
+
+    .music-info {
+      color: #d8b4fe;
+      font-size: 0.8rem;
+      min-width: 100px;
+    }
+
+    @media (max-width: 768px) {
+      .music-player {
+        bottom: 1rem;
+        right: 1rem;
+      }
+
+      .music-info {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="noise"></div>
+
+  <!-- SPLASH SCREEN -->
+  <div class="splash" id="splash">
+    <button class="start-btn" id="startBtn">Começar</button>
+  </div>
+
+  <!-- MAIN CONTENT -->
+  <div class="container" id="mainContainer">
+    <!-- HEADER COM CONTADOR -->
+    <div class="header-counter">
+      <div class="counter-display">
+        <div class="counter-unit">
+          <div class="counter-value" id="years">4</div>
+          <div class="counter-label">Anos</div>
+        </div>
+        <div class="separator">•</div>
+        <div class="counter-unit">
+          <div class="counter-value" id="months">0</div>
+          <div class="counter-label">Meses</div>
+        </div>
+        <div class="separator">•</div>
+        <div class="counter-unit">
+          <div class="counter-value" id="days">0</div>
+          <div class="counter-label">Dias</div>
+        </div>
+        <div class="separator">•</div>
+        <div class="counter-unit">
+          <div class="counter-value" id="hours">00</div>
+          <div class="counter-label">Horas</div>
+        </div>
+        <div class="separator">•</div>
+        <div class="counter-unit">
+          <div class="counter-value" id="minutes">00</div>
+          <div class="counter-label">Min</div>
+        </div>
+        <div class="separator">•</div>
+        <div class="counter-unit">
+          <div class="counter-value" id="seconds">00</div>
+          <div class="counter-label">Seg</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <section class="hero">
+      <h1>4 Anos de<br>Nosso Amor</h1>
+      <p>Uma celebração eterna</p>
+      <div class="scroll-arrow"></div>
+    </section>
+
+    <!-- GALERIA -->
+    <section class="gallery-section">
+      <div class="gallery-grid" id="galleryGrid"></div>
+    </section>
+
+    <!-- FINAL -->
+    <section class="ending-section">
+      <h2>Para você, meu amor</h2>
+      <p>1.460 dias. Milhares de sorrisos. Momentos que moldaram quem somos juntos.</p>
+      <p>Você é meu destino. Todos os dias escolho você.</p>
+      <p>Obrigado por ser minha paz e minha luz.</p>
+      <p style="font-size: 1.4em; color: #d8b4fe; margin-top: 2rem;">Eu te amo absurdamente 💜</p>
+      
+      <div class="spotify-embed">
+        <iframe src="https://open.spotify.com/embed/album/7oQOrbVZ1kzPRcWuAtbCwO?utm_source=generator&theme=0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+      </div>
+    </section>
+  </div>
+
+  <!-- PLAYER -->
+  <div class="music-player">
+    <button id="playPauseBtn" title="Play/Pause">▶</button>
+    <div class="music-info">
+      <div id="musicTime">0:00 / 0:00</div>
+    </div>
+  </div>
+
+  <audio id="bgMusic" preload="metadata"></audio>
+
+  <script>
+    const splash = document.getElementById("splash");
+    const startBtn = document.getElementById("startBtn");
+    const mainContainer = document.getElementById("mainContainer");
+
+    startBtn.addEventListener("click", () => {
+      const years = ["2022", "2023", "2024", "2025", "2026"];
+      let index = 0;
+      startBtn.disabled = true;
+      const interval = setInterval(() => {
+        startBtn.textContent = years[index];
+        startBtn.classList.add("pulse");
+        setTimeout(() => startBtn.classList.remove("pulse"), 250);
+        index++;
+        if (index >= years.length) {
+          clearInterval(interval);
+          setTimeout(() => {
+            splash.classList.add("hidden");
+            mainContainer.classList.add("visible");
+            const audio = document.getElementById("bgMusic");
+            if (audio.src) {
+              audio.play().catch(e => console.log("Autoplay bloqueado"));
+            }
+          }, 800);
+        }
+      }, 450);
+    });
+
+    // CONTADOR PRINCIPAL
+    const startDate = new Date("2022-05-26T00:00:00");
+
+    function updateCounter() {
+      const now = new Date();
+      let years = now.getFullYear() - startDate.getFullYear();
+      let months = now.getMonth() - startDate.getMonth();
+      let days = now.getDate() - startDate.getDate();
+      let hours = now.getHours() - startDate.getHours();
+      let minutes = now.getMinutes() - startDate.getMinutes();
+      let seconds = now.getSeconds() - startDate.getSeconds();
+
+      if (seconds < 0) { seconds += 60; minutes -= 1; }
+      if (minutes < 0) { minutes += 60; hours -= 1; }
+      if (hours < 0) { hours += 24; days -= 1; }
+      if (days < 0) {
+        const lastMonth = new Date(now.getFullYear(), now.getMonth(), 0).getDate();
+        days += lastMonth;
+        months -= 1;
+      }
+      if (months < 0) { months += 12; years -= 1; }
+
+      document.getElementById("years").textContent = years;
+      document.getElementById("months").textContent = months;
+      document.getElementById("days").textContent = days;
+      document.getElementById("hours").textContent = String(hours).padStart(2, "0");
+      document.getElementById("minutes").textContent = String(minutes).padStart(2, "0");
+      document.getElementById("seconds").textContent = String(seconds).padStart(2, "0");
+    }
+
+    updateCounter();
+    setInterval(updateCounter, 1000);
+
+    // GALERIA
+    const photos = [
+      "IMG_1420.JPEG",
+      "IMG_0419.JPEG",
+      "IMG_1735.JPEG",
+      "IMG_8285.JPEG",
+      "IMG_1878.JPEG",
+      "IMG_1638.JPEG",
+      "IMG_1420.MOV",
+      "IMG_1735.MOV"
+    ];
+
+    const lyrics = [
+      { text: "1.460 dias juntos", time: 0 },
+      { text: "Cada momento é uma dádiva", time: 5 },
+      { text: "Você é meu destino", time: 12 },
+      { text: "Todos os dias escolho você", time: 19 },
+      { text: "Sua paz é minha paz", time: 26 },
+      { text: "Luz nos meus dias escuros", time: 33 },
+      { text: "Para sempre começando", time: 40 },
+      { text: "Eu te amo absurdamente", time: 47 }
+    ];
+
+    function buildGallery() {
+      const gallery = document.getElementById("galleryGrid");
+      let photoIndex = 0;
+      let lyricIndex = 0;
+
+      for (let i = 0; i < photos.length + lyrics.length; i++) {
+        if (i % 2 === 0 && photoIndex < photos.length) {
+          const card = document.createElement("div");
+          card.className = "photo-card";
+          card.style.animationDelay = (i * 0.1) + "s";
+
+          const photo = photos[photoIndex];
+          if (photo.endsWith(".MOV")) {
+            card.innerHTML = `<video src="${photo}" autoplay muted loop playsinline></video>`;
+          } else {
+            card.innerHTML = `<img src="${photo}" loading="lazy" alt="Momento ${photoIndex + 1}">`;
+          }
+
+          gallery.appendChild(card);
+          photoIndex++;
+        } else if (lyricIndex < lyrics.length) {
+          const card = document.createElement("div");
+          card.className = "lyrics-box";
+          card.style.animationDelay = (i * 0.1) + "s";
+          card.dataset.lyricIndex = lyricIndex;
+          card.innerHTML = `<div class="lyrics-text">${lyrics[lyricIndex].text}</div>`;
+          gallery.appendChild(card);
+          lyricIndex++;
+        }
+      }
+    }
+
+    buildGallery();
+
+    function updateLyricsHighlight() {
+      const currentTime = audio.currentTime;
+      let activeIndex = 0;
+      for (let i = 0; i < lyrics.length; i++) {
+        if (currentTime >= lyrics[i].time) activeIndex = i;
+      }
+      document.querySelectorAll(".lyrics-box").forEach(box => {
+        box.classList.toggle("active", Number(box.dataset.lyricIndex) === activeIndex);
+      });
+    }
+
+    // MÚSICA
+    const audio = document.getElementById("bgMusic");
+    const playPauseBtn = document.getElementById("playPauseBtn");
+    const musicTime = document.getElementById("musicTime");
+
+    audio.src = "musica.mp3";
+    audio.volume = 0.6;
+
+    playPauseBtn.addEventListener("click", () => {
+      if (audio.paused) {
+        audio.play().catch(e => console.log("Erro"));
+        playPauseBtn.textContent = "⏸";
+      } else {
+        audio.pause();
+        playPauseBtn.textContent = "▶";
+      }
+    });
+
+    audio.addEventListener("timeupdate", () => {
+      const mins = Math.floor(audio.currentTime / 60);
+      const secs = Math.floor(audio.currentTime % 60);
+      const totalMins = Math.floor(audio.duration / 60) || 0;
+      const totalSecs = Math.floor(audio.duration % 60) || 0;
+      musicTime.textContent = `${mins}:${String(secs).padStart(2, "0")} / ${totalMins}:${String(totalSecs).padStart(2, "0")}`;
+      updateLyricsHighlight();
+    });
+
+    audio.addEventListener("play", () => playPauseBtn.textContent = "⏸");
+    audio.addEventListener("pause", () => playPauseBtn.textContent = "▶");
+
+    // SCROLL
+    document.querySelector(".scroll-arrow").addEventListener("click", () => {
+      document.querySelector(".gallery-section").scrollIntoView({ behavior: "smooth" });
+    });
+
+    // Unlock audio
+    document.addEventListener("click", () => {
+      if (audio.paused && audio.src) {
+        audio.play().catch(e => {});
+      }
+    }, { once: true });
+  </script>
+</body>
+</html>
