@@ -6,13 +6,15 @@ const photos = [
   '/IMG_0419.JPEG',
   '/IMG_1735.JPEG',
   '/IMG_8285.JPEG',
+  '/IMG_1638.JPEG',
 ];
 
 const yearTexts = [
   { year: '2022', text: 'O Começo de Tudo' },
   { year: '2023', text: 'Crescemos Juntos' },
   { year: '2024', text: 'Nossas Histórias' },
-  { year: '2025', text: 'Para Sempre' },
+  { year: '2025', text: 'Crescimento' },
+  { year: '2026', text: 'Para Sempre' },
 ];
 
 export default function ZAxisTunnel() {
@@ -23,7 +25,7 @@ export default function ZAxisTunnel() {
   });
 
   return (
-    <div ref={containerRef} className="relative h-[500vh] w-full bg-dark">
+    <div ref={containerRef} className="relative h-[625vh] w-full bg-dark">
       {/* Tunnel container */}
       <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden bg-gradient-to-b from-dark/50 via-dark to-dark/50">
         {yearTexts.map((item, idx) => (
@@ -36,8 +38,8 @@ export default function ZAxisTunnel() {
 
 function TunnelCard({ index, item, photo, scrollProgress }) {
   // Progress within the range for this specific card
-  const startRange = index * 0.25;
-  const endRange = (index + 1) * 0.25;
+  const startRange = index * 0.2;
+  const endRange = (index + 1) * 0.2;
 
   const scaleProgress = useTransform(
     scrollProgress,
@@ -81,11 +83,11 @@ function TunnelCard({ index, item, photo, scrollProgress }) {
           <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/30 to-transparent" />
 
           {/* Year & Text */}
-          <div className="absolute inset-0 flex flex-col items-center justify-end pb-10 sm:pb-12 text-center px-6">
-            <motion.h2 className="font-serif text-5xl sm:text-6xl lg:text-7xl font-black gradient-text mb-3 sm:mb-4">
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
+            <motion.h2 className="font-black text-8xl sm:text-9xl lg:text-[10rem] leading-none gradient-text mb-6 sm:mb-8 drop-shadow-lg">
               {item.year}
             </motion.h2>
-            <motion.p className="text-primary text-base sm:text-lg font-light tracking-wider opacity-95">
+            <motion.p className="text-primary/90 text-lg sm:text-xl font-light tracking-widest uppercase mt-4">
               {item.text}
             </motion.p>
           </div>

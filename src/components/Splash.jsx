@@ -6,7 +6,7 @@ export default function Splash({ onComplete }) {
   const [showYears, setShowYears] = useState(false);
   const [yearIndex, setYearIndex] = useState(0);
 
-  const years = ['2023', '2024', '2025', '2026'];
+  const years = ['2022', '2023', '2024', '2025', '2026'];
 
   const handleStart = () => {
     setShowYears(true);
