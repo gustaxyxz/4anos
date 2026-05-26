@@ -40,14 +40,13 @@ export const useAudioSync = (audioRef) => {
 };
 
 export const lyrics = [
-  { text: '1.460 dias juntos', time: 0, duration: 4 },
-  { text: 'Cada momento é uma dádiva', time: 5, duration: 6 },
-  { text: 'Você é meu destino', time: 12, duration: 6 },
-  { text: 'Todos os dias escolho você', time: 19, duration: 6 },
-  { text: 'Sua paz é minha paz', time: 26, duration: 6 },
-  { text: 'Luz nos meus dias escuros', time: 33, duration: 6 },
-  { text: 'Para sempre começando', time: 40, duration: 6 },
-  { text: 'Eu te amo absurdamente', time: 47, duration: 10 },
+  { section: '♫ Introdução', emoji: '🎸', time: 0, duration: 12 },
+  { section: '♫ Verso 1', emoji: '✨', time: 12, duration: 18 },
+  { section: '♫ Refrão Principal', emoji: '💜', time: 30, duration: 16 },
+  { section: '♫ Verso 2', emoji: '✨', time: 46, duration: 18 },
+  { section: '♫ Refrão Principal', emoji: '💜', time: 64, duration: 16 },
+  { section: '♫ Bridge', emoji: '🌟', time: 80, duration: 14 },
+  { section: '♫ Final', emoji: '💜', time: 94, duration: 20 },
 ];
 
 export const getCurrentLyric = (currentTime) => {
