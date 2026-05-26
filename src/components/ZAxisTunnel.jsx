@@ -25,7 +25,7 @@ export default function ZAxisTunnel() {
   return (
     <div ref={containerRef} className="relative h-[500vh] w-full bg-dark">
       {/* Tunnel container */}
-      <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+      <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden bg-gradient-to-b from-dark/50 via-dark to-dark/50">
         {yearTexts.map((item, idx) => (
           <TunnelCard key={idx} index={idx} item={item} photo={photos[idx]} scrollProgress={scrollYProgress} />
         ))}

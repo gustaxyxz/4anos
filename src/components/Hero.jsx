@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 
 export default function Hero({ onScrollClick }) {
   return (
-    <section className="relative h-screen w-full flex flex-col items-center justify-center px-4 sm:px-6 overflow-hidden">
+    <section className="relative h-screen w-full flex flex-col items-center justify-center px-4 sm:px-6 overflow-hidden bg-gradient-to-b from-dark via-dark to-dark/95">
       <div className="relative z-10 text-center">
         <motion.h1
           className="font-serif text-6xl sm:text-7xl lg:text-8xl font-black gradient-text mb-6 sm:mb-8 leading-tight gpu-accelerated"
