@@ -17,12 +17,19 @@ export default function Splash({ onComplete }) {
           clearInterval(interval);
           setTimeout(() => {
             setShowSplash(false);
-            setTimeout(() => onComplete?.(), 300);
-          }, 600);
+            setTimeout(() => {
+              const audio = document.querySelector('audio');
+              if (audio) {
+                audio.volume = 0.3;
+                audio.play().catch(err => console.log('Autoplay prevented:', err));
+              }
+              onComplete?.();
+            }, 300);
+          }, 1000);
         }
         return next;
       });
-    }, 400);
+    }, 1200);
   };
 
   return (
@@ -88,42 +95,22 @@ export default function Splash({ onComplete }) {
           ) : (
             // Years display state - clean and minimal
             <motion.div
-              className="text-center flex flex-col items-center justify-center h-screen"
+              className="text-center flex flex-col items-center justify-center w-full h-screen px-4 sm:px-6"
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ duration: 0.3 }}
             >
-              {/* Large year number */}
+              {/* Large year number - optimized for mobile */}
               <motion.h1
-                className="font-black text-8xl sm:text-9xl lg:text-[14rem] leading-none gradient-text"
+                className="font-black text-7xl sm:text-8xl md:text-9xl lg:text-[14rem] leading-none gradient-text"
                 key={yearIndex}
-                initial={{ scale: 0.3, opacity: 0 }}
+                initial={{ scale: 0.4, opacity: 0 }}
                 animate={{ scale: 1, opacity: 1 }}
-                exit={{ scale: 1.5, opacity: 0 }}
-                transition={{ duration: 0.6, ease: 'easeOut' }}
+                exit={{ scale: 1.3, opacity: 0 }}
+                transition={{ duration: 0.8, ease: 'easeOut' }}
               >
                 {years[yearIndex]}
               </motion.h1>
-
-              {/* Progress indicator */}
-              <motion.div
-                className="mt-12 flex gap-2"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2 }}
-              >
-                {years.map((_, idx) => (
-                  <motion.div
-                    key={idx}
-                    className="h-2 rounded-full"
-                    animate={{
-                      width: idx === yearIndex ? 32 : 8,
-                      backgroundColor: idx === yearIndex ? '#c084fc' : '#8b5cf6',
-                    }}
-                    transition={{ duration: 0.3 }}
-                  />
-                ))}
-              </motion.div>
             </motion.div>
           )}
 

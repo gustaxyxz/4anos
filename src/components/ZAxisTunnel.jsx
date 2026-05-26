@@ -79,15 +79,15 @@ function TunnelCard({ index, item, photo, scrollProgress }) {
             decoding="async"
           />
 
-          {/* Overlay gradient */}
-          <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/30 to-transparent" />
+          {/* Overlay gradient - transparent to allow light from image */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-dark/10 to-dark/20" />
 
           {/* Year & Text */}
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-6">
-            <motion.h2 className="font-black text-8xl sm:text-9xl lg:text-[10rem] leading-none gradient-text mb-6 sm:mb-8 drop-shadow-lg">
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-4 sm:px-6 z-10">
+            <motion.h2 className="font-black text-9xl sm:text-[10rem] md:text-[12rem] lg:text-[14rem] leading-none gradient-text drop-shadow-[0_0_40px_rgba(200,100,255,0.8)]">
               {item.year}
             </motion.h2>
-            <motion.p className="text-primary/90 text-lg sm:text-xl font-light tracking-widest uppercase mt-4">
+            <motion.p className="text-white font-light tracking-widest uppercase text-base sm:text-lg md:text-xl drop-shadow-[0_0_15px_rgba(0,0,0,0.9)]">
               {item.text}
             </motion.p>
           </div>
