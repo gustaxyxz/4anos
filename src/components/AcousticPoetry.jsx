@@ -98,8 +98,21 @@ export default function AcousticPoetry() {
               <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse" />
             </div>
 
+            {/* Album Cover (Estilo Spotify) */}
+            <motion.div
+              className="relative w-48 h-48 sm:w-60 sm:h-60 mx-auto mb-6 sm:mb-8 rounded-lg shadow-[0_15px_50px_rgba(0,0,0,0.5)] overflow-hidden border border-white/5"
+              animate={{ scale: isPlaying ? 1 : 0.95, opacity: isPlaying ? 1 : 0.8 }}
+              transition={{ duration: 0.5, ease: 'easeOut' }}
+            >
+              <img
+                src="/cbj-cover.jpg"
+                alt="Como Tudo Deve Ser - Charlie Brown Jr"
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
+
             {/* Lyric Display */}
-            <div className="min-h-[180px] sm:min-h-[220px] flex items-center justify-center mb-12">
+            <div className="min-h-[120px] sm:min-h-[140px] flex items-center justify-center mb-8">
               <LyricDisplay activeLyric={activeLyric} isPlaying={isPlaying} />
             </div>
 
@@ -139,7 +152,7 @@ export default function AcousticPoetry() {
             <div className="text-center text-sm text-gray-400">
               {isPlaying ? (
                 <motion.span animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }}>
-                  ♫ Tocando "Como Tudo Deve Ser"
+                  ♫ Charlie Brown Jr. - Como Tudo Deve Ser
                 </motion.span>
               ) : (
                 <span>Clique para tocar ♫</span>
