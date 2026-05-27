@@ -40,13 +40,17 @@ export const useAudioSync = (audioRef) => {
 };
 
 export const lyrics = [
-  { section: '♫ Introdução', emoji: '🎸', time: 0, duration: 12 },
-  { section: '♫ Verso 1', emoji: '✨', time: 12, duration: 18 },
-  { section: '♫ Refrão Principal', emoji: '💜', time: 30, duration: 16 },
-  { section: '♫ Verso 2', emoji: '✨', time: 46, duration: 18 },
-  { section: '♫ Refrão Principal', emoji: '💜', time: 64, duration: 16 },
-  { section: '♫ Bridge', emoji: '🌟', time: 80, duration: 14 },
-  { section: '♫ Final', emoji: '💜', time: 94, duration: 20 },
+  { text: 'Um dia eu espero te encontrar numa bem melhor', emoji: '🎸', time: 17, duration: 6 },
+  { text: 'Cada um tem seu caminho, eu sei foi até melhor', emoji: '🛤️', time: 23, duration: 7 },
+  { text: 'Irmãos do mesmo jeito', emoji: '🤝', time: 30, duration: 5 },
+  { text: 'Quero que você seja feliz', emoji: '✨', time: 35, duration: 4 },
+  { text: 'Como tudo deve ser...', emoji: '🤍', time: 39, duration: 4 },
+  { text: 'Um dia eu espero te encontrar numa bem melhor', emoji: '🎸', time: 44, duration: 6 },
+  { text: 'Cada um tem seu caminho, eu sei foi até melhor', emoji: '🛤️', time: 50, duration: 6 },
+  { text: 'Irmãos do mesmo jeito', emoji: '🤝', time: 56, duration: 4 },
+  { text: 'Quero que você seja feliz', emoji: '✨', time: 61, duration: 4 },
+  { text: 'Como tudo deve ser...', emoji: '🤍', time: 65, duration: 6 },
+  { text: 'Eu te amo absurdamente', emoji: '💜', time: 72, duration: 10 },
 ];
 
 export const getCurrentLyric = (currentTime) => {

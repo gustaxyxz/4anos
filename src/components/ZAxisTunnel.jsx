@@ -21,42 +21,39 @@ export default function ZAxisTunnel() {
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ['start end', 'end start'],
+    offset: ['start start', 'end end'],
   });
 
   return (
-    <div ref={containerRef} className="relative h-[625vh] w-full bg-dark">
+    <div ref={containerRef} className="relative w-full bg-dark" style={{ height: `${yearTexts.length * 120}vh` }}>
       {/* Tunnel container */}
-      <div className="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden bg-gradient-to-b from-dark/50 via-dark to-dark/50">
+      <div className="sticky top-0 left-0 h-screen w-full flex items-center justify-center overflow-hidden bg-gradient-to-b from-dark/50 via-dark to-dark/50 z-20 pointer-events-none">
         {yearTexts.map((item, idx) => (
-          <TunnelCard key={idx} index={idx} item={item} photo={photos[idx]} scrollProgress={scrollYProgress} />
+          <TunnelCard key={idx} index={idx} item={item} photo={photos[idx]} scrollProgress={scrollYProgress} total={yearTexts.length} />
         ))}
       </div>
     </div>
   );
 }
 
-function TunnelCard({ index, item, photo, scrollProgress }) {
-  // Progress within the range for this specific card
-  const startRange = index * 0.2;
-  const endRange = (index + 1) * 0.2;
+function TunnelCard({ index, item, photo, scrollProgress, total }) {
+  const step = 1 / total;
+  
+  // Sobreposição suave: cada foto começa a aparecer ANTES da anterior sumir
+  const start = (index * step) - (step * 0.3);
+  const peak = (index * step) + (step * 0.3);
+  const end = (index * step) + (step * 1.3);
 
   const scaleProgress = useTransform(
     scrollProgress,
-    [startRange - 0.12, startRange, endRange, endRange + 0.12],
-    [0.6, 1, 1, 0.6]
+    [start, peak, end],
+    [0.1, 1, 5]
   );
 
   const opacityProgress = useTransform(
     scrollProgress,
-    [startRange - 0.12, startRange, endRange, endRange + 0.12],
+    [start, start + (step * 0.3), peak + (step * 0.3), end],
     [0, 1, 1, 0]
-  );
-
-  const yProgress = useTransform(
-    scrollProgress,
-    [startRange - 0.15, startRange, endRange, endRange + 0.15],
-    [80, 0, 0, -80]
   );
 
   return (
@@ -65,7 +62,6 @@ function TunnelCard({ index, item, photo, scrollProgress }) {
       style={{
         scale: scaleProgress,
         opacity: opacityProgress,
-        y: yProgress,
       }}
     >
       <div className="relative w-full h-full flex items-center justify-center px-3 sm:px-6">

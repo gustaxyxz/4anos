@@ -21,7 +21,7 @@ const LyricDisplay = memo(({ activeLyric, isPlaying }) => (
           <span className="text-6xl sm:text-7xl mb-4 block">{activeLyric.emoji}</span>
         </motion.div>
         <p className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-          {activeLyric.section}
+          {activeLyric.text}
         </p>
       </motion.div>
     ) : (
@@ -42,6 +42,26 @@ export default function AcousticPoetry() {
   const audioRef = useRef(null);
   const { currentTime, duration, isPlaying } = useAudioSync(audioRef);
   const [activeLyric, setActiveLyric] = useState(null);
+
+  useEffect(() => {
+    const initAudio = () => {
+      if (audioRef.current && audioRef.current.paused) {
+        audioRef.current.play().then(() => {
+          ['click', 'touchstart', 'scroll'].forEach(evt => document.removeEventListener(evt, initAudio));
+        }).catch((e) => console.warn('Autoplay bloqueado pelo iOS, aguardando toque:', e));
+      }
+    };
+
+    // O iPhone requer que o usuário interaja com a tela para liberar o áudio.
+    // Vamos tentar forçar o play no primeiro toque ou rolagem.
+    ['click', 'touchstart', 'scroll'].forEach(evt => {
+      document.addEventListener(evt, initAudio, { passive: true });
+    });
+
+    return () => {
+      ['click', 'touchstart', 'scroll'].forEach(evt => document.removeEventListener(evt, initAudio));
+    };
+  }, []);
 
   useEffect(() => {
     const lyric = getCurrentLyric(currentTime);
@@ -90,75 +110,38 @@ export default function AcousticPoetry() {
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
         >
-          {/* Spotify-Style Card */}
-          <div className="relative bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-xl rounded-3xl p-8 sm:p-12 border border-primary/30 shadow-2xl overflow-hidden">
-            {/* Animated Background */}
-            <div className="absolute inset-0 -z-10">
-              <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-              <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-accent/10 rounded-full blur-3xl animate-pulse" />
-            </div>
+          {/* Letras acima do player para não atrapalhar o design */}
+          <div className="min-h-[120px] sm:min-h-[140px] flex items-center justify-center mb-10">
+            <LyricDisplay activeLyric={activeLyric} isPlaying={isPlaying} />
+          </div>
 
-            {/* Album Cover (Estilo Spotify) */}
-            <motion.div
-              className="relative w-48 h-48 sm:w-60 sm:h-60 mx-auto mb-6 sm:mb-8 rounded-lg shadow-[0_15px_50px_rgba(0,0,0,0.5)] overflow-hidden border border-white/5"
-              animate={{ scale: isPlaying ? 1 : 0.95, opacity: isPlaying ? 1 : 0.8 }}
-              transition={{ duration: 0.5, ease: 'easeOut' }}
-            >
-              <img
-                src="/cbj-cover.jpg"
-                alt="Como Tudo Deve Ser - Charlie Brown Jr"
-                className="w-full h-full object-cover"
-              />
-            </motion.div>
-
-            {/* Lyric Display */}
-            <div className="min-h-[120px] sm:min-h-[140px] flex items-center justify-center mb-8">
-              <LyricDisplay activeLyric={activeLyric} isPlaying={isPlaying} />
-            </div>
-
-            {/* Progress Bar */}
-            <div className="mb-6 space-y-2">
-              <div className="relative h-2 bg-gray-700 rounded-full overflow-hidden">
-                <motion.div
-                  className="absolute top-0 left-0 h-full bg-gradient-to-r from-primary to-accent shadow-lg shadow-primary/50"
-                  style={{ width: `${progress}%` }}
-                  transition={{ type: 'tween', ease: 'linear' }}
-                />
+          {/* Mini Player Estreito (Estilo Spotify Bottom Bar) */}
+          <div className="bg-[#181818] rounded-xl p-3 w-full max-w-[340px] mx-auto shadow-2xl border border-white/10 font-sans">
+            <div className="flex items-center gap-3 mb-2">
+              <img src="/cbj-cover.jpg" alt="Capa" className="w-12 h-12 rounded object-cover shadow-md" />
+              <div className="flex-1 overflow-hidden">
+                <h3 className="text-white text-sm font-bold truncate">Como Tudo Deve Ser</h3>
+                <p className="text-[#a7a7a7] text-xs truncate">Charlie Brown Jr.</p>
               </div>
-              <div className="flex justify-between text-xs text-gray-400 font-mono">
-                <span>{formatTime(currentTime)}</span>
-                <span>{formatTime(duration)}</span>
+              <button onClick={handlePlayPause} className="text-white hover:scale-105 active:scale-95 transition-transform flex-shrink-0 mr-2">
+                {isPlaying ? (
+                  <svg role="img" height="24" width="24" viewBox="0 0 24 24" fill="currentColor"><path d="M5.7 3a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7H5.7zm10 0a.7.7 0 0 0-.7.7v16.6a.7.7 0 0 0 .7.7h2.6a.7.7 0 0 0 .7-.7V3.7a.7.7 0 0 0-.7-.7h-2.6z"></path></svg>
+                ) : (
+                  <svg role="img" height="24" width="24" viewBox="0 0 24 24" fill="currentColor"><path d="M7.05 3.606l13.49 7.788a.7.7 0 0 1 0 1.212L7.05 20.394A.7.7 0 0 1 6 19.788V4.212a.7.7 0 0 1 1.05-.606z"></path></svg>
+                )}
+              </button>
+            </div>
+            
+            {/* Barra de Progresso Estreita */}
+            <div className="flex items-center gap-2 group px-1">
+              <span className="text-[10px] text-[#a7a7a7] min-w-[30px] text-right">{formatTime(currentTime)}</span>
+              <div className="h-1 flex-1 bg-[#4d4d4d] rounded-full overflow-hidden relative">
+                <div className="h-full bg-white group-hover:bg-[#1ed760] transition-colors" style={{ width: `${progress}%` }} />
               </div>
-            </div>
-
-            {/* Play Button */}
-            <div className="flex justify-center mb-8">
-              <motion.button
-                onClick={handlePlayPause}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.95 }}
-                className="relative group"
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-primary to-accent rounded-full blur-lg group-hover:blur-xl transition-all opacity-75 group-hover:opacity-100" />
-                <div className="relative bg-gradient-to-r from-primary to-accent rounded-full p-4 text-white">
-                  <span className="text-2xl sm:text-3xl">
-                    {isPlaying ? '⏸' : '▶'}
-                  </span>
-                </div>
-              </motion.button>
-            </div>
-
-            {/* Status */}
-            <div className="text-center text-sm text-gray-400">
-              {isPlaying ? (
-                <motion.span animate={{ opacity: [0.5, 1, 0.5] }} transition={{ duration: 1.5, repeat: Infinity }}>
-                  ♫ Charlie Brown Jr. - Como Tudo Deve Ser
-                </motion.span>
-              ) : (
-                <span>Clique para tocar ♫</span>
-              )}
+              <span className="text-[10px] text-[#a7a7a7] min-w-[30px]">{formatTime(duration)}</span>
             </div>
           </div>
+
         </motion.div>
 
         {/* Love Message */}
@@ -190,9 +173,10 @@ export default function AcousticPoetry() {
         {/* Audio Element */}
         <audio
           ref={audioRef}
-          src="/musica.mp3"
+          src="/como-tudo-deve-ser.mp3"
           preload="metadata"
           crossOrigin="anonymous"
+          autoPlay
         />
       </div>
     </section>
